@@ -1,41 +1,23 @@
-# AWS EC2 Metadata Processor Plugin
+# GCE Metadata Processor Plugin
 
-AWS EC2 Metadata processor plugin appends metadata gathered from [AWS IMDS][]
-to metrics associated with EC2 instances.
-
-[AWS IMDS]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
+GCE Metadata processor plugin appends metadata gathered from Google Cloud
+to metrics associated with GCE instances.
 
 ## Configuration
 
 ```toml
-[[processors.aws_ec2]]
-  ## Available tags:
-  ## * accountId
-  ## * architecture
-  ## * availabilityZone
-  ## * billingProducts
-  ## * imageId
-  ## * instanceId
-  ## * instanceType
-  ## * kernelId
-  ## * pendingTime
-  ## * privateIp
-  ## * ramdiskId
-  ## * region
-  ## * version
-  imds_tags = []
-
-  ## EC2 instance tags retrieved with DescribeTags action.
-  ## In case tag is empty upon retrieval it's omitted when tagging metrics.
-  ## Note that in order for this to work, role attached to EC2 instance or AWS
-  ## credentials available from the environment must have a policy attached, that
-  ## allows ec2:DescribeTags.
-  ##
+  ## GCP Instance and project metadata to attach to metrics as tags.
   ## For more information see:
-  ## https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeTags.html
-  ec2_tags = []
+  ## https://cloud.google.com/compute/docs/metadata/default-metadata-values
+  ##
+  ## Available tags:
+  ## * zone
+  ## * tags
+  ## * name
+  ## * hostname
+  allow_tags = []
 
-  ## Timeout for http requests made by against aws ec2 metadata endpoint.
+  ## Timeout for http requests made by against gce metadata endpoint.
   timeout = "10s"
 
   ## ordered controls whether or not the metrics need to stay in the same order
@@ -50,18 +32,4 @@ to metrics associated with EC2 instances.
   ## at the same time.
   ## It's probably best to keep this number fairly low.
   max_parallel_calls = 10
-```
-
-## Example
-
-Append `accountId` and `instanceId` to metrics tags:
-
-```toml
-[[processors.aws_ec2]]
-  tags = [ "accountId", "instanceId"]
-```
-
-```diff
-- cpu,hostname=localhost time_idle=42
-+ cpu,hostname=localhost,accountId=123456789,instanceId=i-123456789123 time_idle=42
 ```
